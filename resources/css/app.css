@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Koulen&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import "tailwindcss";
+@source "../views";
+
+@theme {
+    --color-red-main: rgb(180, 63, 63);
+    --color-yellow-main: rgb(255, 130, 37);
+    --color-white-main: rgb(248, 237, 237);
+    --color-black-main: rgb(23, 59, 69);
+
+    --font-koulen: 'Koulen', 'Poppins', sans-serif;
+    --font-poppins: 'Poppins', sans-serif;
+}
+
+@font-face {
+    font-family: 'Koulen';
+    src: url('/fonts/Koulen-Regular.ttf') format('true-type');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/fonts/Poppins-Regular.ttf') format('true-type');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: var(--font-poppins);
+    color: var(--color-black-main);
+}
