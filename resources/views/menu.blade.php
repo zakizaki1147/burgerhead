@@ -127,10 +127,6 @@
         </form>
     </x-modal>
 
-    {{-- @if (session('success'))
-        <div>{{ session('success') }}</div>
-    @endif --}}
-
     <x-modal id="modalMenuDetail" title="Menu Detail">
         <div class="grid grid-cols-[auto_1fr] gap-1.5 font-medium">
             <p>Menu ID</p>
@@ -163,8 +159,11 @@
             </div>
             <div class="flex flex-col">
                 <label for="menuPrice" class="font-bold text-sm w-fit">Menu Price</label>
-                <input type="number" name="menuPrice" id="modalPrice" placeholder="Menu Price" autocomplete="off" required
-                class="w-90 p-2 text-sm border-2 border-black-main rounded-lg outline-none focus:bg-red-main/10 focus:border-red-main transition">
+                <div class="w-90 flex items-center border-2 border-black-main rounded-lg outline-none focus-within:bg-red-main/10 focus-within:border-red-main transition">
+                    <div class="pl-2">$</div>
+                    <input type="number" name="menuPrice" id="modalPrice" placeholder="Menu Price" autocomplete="off" required
+                    class="w-90 p-2 pl-0 text-sm outline-none">
+                </div>
             </div>
             <hr class="w-full border border-black-main" />
             <div class="w-full flex gap-3">
@@ -194,4 +193,30 @@
             </form>
         </div>
     </x-modal>
+
+    @if (session('success') || $errors->any())
+        <div id="alert" class="fixed bottom-4 right-4 z-10 transition-opacity duration-700">
+            <div class="p-4 font-semibold rounded-md flex justify-center items-center {{ session('success') ? 'bg-green-500' : 'bg-red-500 text-white-main' }}">
+                @if (session('success'))
+                    <x-lucide-circle-check class="w-10 mr-1" />| {{ session('success') }}
+                @else
+                    <x-lucide-circle-x class="w-10 mr-1" />| {{ $errors->first() }}
+                @endif
+            </div>
+        </div>
+
+        <script>
+            const alert = document.getElementById('alert');
+
+            if (alert) {
+                setTimeout(() => {
+                    alert.classList.add('opacity-0');
+                    
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 700)
+                }, 3000);
+            }
+        </script>
+    @endif
 </x-layout>

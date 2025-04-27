@@ -112,7 +112,7 @@
             </div> --}}
         </div>
     </div>
-    @if ($role === 'Cashier')
+    {{-- @if ($role === 'Cashier')
         <div class="w-full bg-white px-8 py-6 flex flex-col gap-2 rounded-lg shadow-lg">
             <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">Recent Order(s)</h1>
             <hr class="w-full border border-black-main" />
@@ -158,5 +158,5 @@
                 @endforelse
             </div>
         </div>
-    @endif
+    @endif --}}
 </x-layout>

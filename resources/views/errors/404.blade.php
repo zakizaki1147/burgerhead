@@ -11,7 +11,7 @@
 <body class="bg-red-main">
     <div class="w-full h-screen flex flex-col justify-center items-center gap-2">
         <x-lucide-alert-circle class="w-40 text-white-main"></x-lucide-circle>
-        <p class="font-bold text-2xl text-white-main">Page not found!</p>
+        <p class="font-bold text-2xl text-white-main">404 | Page not found!</p>
     </div>
 </body>
 </html>

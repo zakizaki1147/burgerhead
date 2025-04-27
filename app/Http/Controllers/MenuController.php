@@ -19,8 +19,10 @@ class MenuController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'menuName' => 'required|string|max:100',
+            'menuName' => 'required|string|max:100|unique:menus,menu_name',
             'menuPrice' => 'required|numeric|min:1',
+        ], [
+            'menuName.unique' => 'Menu name already exists! Please use different name!'
         ]);
 
         Menu::create([
@@ -34,8 +36,10 @@ class MenuController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'menuName' => 'required|string|max:100',
+            'menuName' => 'required|string|max:100|unique:menus,menu_name,' . $id . ',menu_id',
             'menuPrice' => 'required|numeric|min:1'
+        ], [
+            'menuName.unique' => 'Menu name already exists! Please use different name!'
         ]);
 
         $menu = Menu::findOrFail($id);

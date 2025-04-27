@@ -116,6 +116,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 const form = modal.querySelector('form');
                 if (form) {
                     form.reset();
+
+                    const menuList = form.querySelector('.menu-list');
+                    if (menuList) {
+                        const menuGroups = menuList.querySelectorAll('.menu-group');
+                        menuGroups.forEach((group, index) => {
+                            if (index > 0) group.remove();
+                        });
+                    }
                 }
 
                 modal.classList.add('hidden');
@@ -131,6 +139,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 const form = modal.querySelector('form');
                 if (form) {
                     form.reset();
+
+                    const menuList = form.querySelector('.menu-list');
+                    if (menuList) {
+                        const menuGroups = menuList.querySelectorAll('.menu-group');
+                        menuGroups.forEach((group, index) => {
+                            if (index > 0) group.remove();
+                        });
+                    }
                 }
 
                 modal.classList.add('hidden');

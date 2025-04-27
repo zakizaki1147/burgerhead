@@ -21,11 +21,14 @@
             <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">{{ $title }} List</h1>
             <div class="flex justify-center items-center gap-2">
                 <div class="w-fit">
-                    <x-primary-button color='yellow-main'>
-                        <x-lucide-download class="w-5" />Export Excel
-                    </x-primary-button>
+                    <form action="{{ route('order.export-excel') }}" method="POST" target="__blank">
+                        @csrf
+                        <x-primary-button color='yellow-main' type="submit">
+                            <x-lucide-download class="w-5" />Export Excel
+                        </x-primary-button>
+                    </form>
                 </div>
-                @if ($role === 'Waiter' || $role === 'Cashier')
+                @if ($role === 'Waiter')
                     <div class="w-fit">
                         <x-secondary-button color='red-main'
                         data-open-modal="modalAddOrder"
@@ -49,7 +52,7 @@
                     <th class="border-b border-r">Menu Ordered</th>
                     <th class="border-b border-r">Amount</th>
                     <th class="border-b border-r">Table</th>
-                    <th class="border-b border-r">Order Status</th>
+                    <th class="border-b border-r">Status</th>
                     <th class="border-b" style="width: 12%">Actions</th>
                 </tr>
             </thead>
@@ -99,7 +102,7 @@
                                         >
                                             <x-lucide-info class="w-6" />
                                         </x-icon-button>
-                                        @if ($role === 'Waiter' || $role === 'Cashier')
+                                        @if ($role === 'Waiter')
                                             |
                                             <x-icon-button color='yellow'
                                             data-open-modal="modalUpdateOrder"
@@ -391,4 +394,30 @@
             </form>
         </div>
     </x-modal>
+
+    @if (session('success') || $errors->any())
+        <div id="alert" class="fixed bottom-4 right-4 z-10 transition-opacity duration-700">
+            <div class="p-4 font-semibold rounded-md flex justify-center items-center {{ session('success') ? 'bg-green-500' : 'bg-red-500 text-white-main' }}">
+                @if (session('success'))
+                    <x-lucide-circle-check class="w-10 mr-1" />| {{ session('success') }}
+                @else
+                    <x-lucide-circle-x class="w-10 mr-1" />| {{ $errors->first() }}
+                @endif
+            </div>
+        </div>
+
+        <script>
+            const alert = document.getElementById('alert');
+
+            if (alert) {
+                setTimeout(() => {
+                    alert.classList.add('opacity-0');
+                    
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 700)
+                }, 3000);
+            }
+        </script>
+    @endif
 </x-layout>

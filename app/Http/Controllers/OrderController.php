@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\OrderExport;
 use App\Models\Customer;
 use App\Models\Menu;
 use App\Models\Order;
@@ -9,6 +10,7 @@ use App\Models\OrderGroup;
 use App\Models\Table;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -131,5 +133,9 @@ class OrderController extends Controller
         $orderGroup->delete();
 
         return redirect()->route('order.index')->with('success', 'Order deleted successfully!');
+    }
+
+    public function exportExcel() {
+        return Excel::download(new OrderExport, 'orders-burgerhead.xlsx');
     }
 }

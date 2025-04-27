@@ -18,19 +18,29 @@
     @endphp
     <div class="w-full bg-white px-8 py-6 flex flex-col gap-2 rounded-lg shadow-lg">
         <div class="flex justify-between items-center">
-            <h1 class="text-red-main text-xl font-bold">{{ $title }} List</h1>
-            @if ($role === 'Cashier')
+            <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">{{ $title }} List</h1>
+            <div class="flex justify-center items-center gap-2">
                 <div class="w-fit">
-                    <x-secondary-button color='red-main'
-                        data-open-modal="modalCreateTransaction"
-                        data-type="create"
-                        data-create-url="{{ route('transaction.store') }}"
-                        data-target-form="formCreateTransaction"
-                    >
-                        <x-lucide-plus-circle class="w-5" />Pay Order
-                    </x-secondary-button>
+                    <form action="{{ route('transaction.export-excel') }}" method="POST" target="__blank">
+                        @csrf
+                        <x-primary-button color="yellow-main" type="submit">
+                            <x-lucide-download class="w-5" /> Export Excel
+                        </x-primary-button>
+                    </form>
                 </div>
-            @endif
+                @if ($role === 'Cashier')
+                    <div class="w-fit">
+                        <x-secondary-button color='red-main'
+                            data-open-modal="modalCreateTransaction"
+                            data-type="create"
+                            data-create-url="{{ route('transaction.store') }}"
+                            data-target-form="formCreateTransaction"
+                        >
+                            <x-lucide-plus-circle class="w-5" />Pay Order
+                        </x-secondary-button>
+                    </div>
+                @endif
+            </div>
         </div>
         <hr class="w-full border border-black-main" />
         <table class="w-full rounded-md overflow-hidden">
@@ -251,6 +261,32 @@
             </form>
         </div>
     </x-modal>
+
+    @if (session('success') || $errors->any())
+        <div id="alert" class="fixed bottom-4 right-4 z-10 transition-opacity duration-700">
+            <div class="p-4 font-semibold rounded-md flex justify-center items-center {{ session('success') ? 'bg-green-500' : 'bg-red-500 text-white-main' }}">
+                @if (session('success'))
+                    <x-lucide-circle-check class="w-10 mr-1" />| {{ session('success') }}
+                @else
+                    <x-lucide-circle-x class="w-10 mr-1" />| {{ $errors->first() }}
+                @endif
+            </div>
+        </div>
+
+        <script>
+            const alert = document.getElementById('alert');
+
+            if (alert) {
+                setTimeout(() => {
+                    alert.classList.add('opacity-0');
+                    
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 700)
+                }, 3000);
+            }
+        </script>
+    @endif
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

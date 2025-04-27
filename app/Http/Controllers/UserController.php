@@ -21,9 +21,11 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'fullName' => 'required|string|max:50',
-            'username' => 'required|string|max:20',
+            'username' => 'required|string|max:20|unique:users,username',
             'password' => 'required|string|min:6',
             'role' => 'required|in:Administrator,Waiter,Cashier,Owner',
+        ], [
+            'username.unique' => 'Username already used! Please use different username!'
         ]);
 
         User::create([
@@ -40,8 +42,10 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'fullName' => 'required|string|max:50',
-            'username' => 'required|string|max:20',
+            'username' => 'required|string|max:20|unique:users,username,' . $id . ',user_id',
             'role' => 'required|in:Administrator,Waiter,Cashier,Owner',
+        ], [
+            'username.unique' => 'Username already used! Please use different username!'
         ]);
 
         $user = User::findOrFail($id);

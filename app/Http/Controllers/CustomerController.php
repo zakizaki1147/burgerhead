@@ -21,8 +21,10 @@ class CustomerController extends Controller
         $validated = $request->validate([
             'customerName' => 'required|string|max:100',
             'gender' => 'required|boolean',
-            'phoneNumber' => 'required|string|max:20',
+            'phoneNumber' => 'required|string|max:20|unique:customers,phone_number',
             'address' => 'required|string|max:255',
+        ], [
+            'phoneNumber.unique' => 'Phone number already used! Please use different phone number!'
         ]);
 
         Customer::create([
@@ -40,8 +42,10 @@ class CustomerController extends Controller
         $validated = $request->validate([
             'customerName' => 'required|string|max:100',
             'gender' => 'required|boolean',
-            'phoneNumber' => 'required|string|max:20',
+            'phoneNumber' => 'required|string|max:20|unique:customers,phone_number,' . $id . ',customer_id',
             'address' => 'required|string|max:255',
+        ], [
+            'phoneNumber.unique' => 'Phone number already used! Please use different phone number!'
         ]);
 
         $customer = Customer::findOrFail($id);

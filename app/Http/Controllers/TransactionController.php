@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\TransactionExport;
 use App\Models\OrderGroup;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TransactionController extends Controller
 {
@@ -118,5 +120,10 @@ class TransactionController extends Controller
         $transaction->delete();
 
         return redirect()->route('transaction.index')->with('success', 'Transaction deleted successfully!');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new TransactionExport, 'transactions-burgerhead.xlsx');
     }
 }

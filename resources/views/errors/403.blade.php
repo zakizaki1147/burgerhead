@@ -4,18 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ $title }} | Burgerhead - Cashier App</title>
+    <title>403 | Burgerhead - Cashier App</title>
     <link rel="shortcut icon" href="/images/burgerhead-logo.png" type="image/x-icon">
     @vite('resources/css/app.css')
-    @vite('resources/js/app.js')
 </head>
-<body class="bg-white-main flex">
-    <div class="w-70">
-        <x-sidebar />
+<body class="bg-red-main">
+    <div class="w-full h-screen flex flex-col justify-center items-center gap-2">
+        <x-lucide-alert-circle class="w-40 text-white-main"></x-lucide-circle>
+        <p class="font-bold text-2xl text-white-main">403 | Access forbidden!</p>
     </div>
-    <main class="flex-1 bg-white-main flex flex-col gap-2 p-6">
-        <x-breadcrumb>{{ $title }}</x-breadcrumb>
-        {{ $slot }}
-    </main>
 </body>
 </html>
