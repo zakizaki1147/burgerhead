@@ -20,14 +20,16 @@
         <div class="flex justify-between items-center">
             <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">{{ $title }} List</h1>
             <div class="flex justify-center items-center gap-2">
-                <div class="w-fit">
-                    <form action="{{ route('transaction.export-excel') }}" method="POST" target="__blank">
-                        @csrf
-                        <x-primary-button color="yellow-main" type="submit">
-                            <x-lucide-download class="w-5" /> Export Excel
-                        </x-primary-button>
-                    </form>
-                </div>
+                @if ($totalTransactions > 0)
+                    <div class="w-fit">
+                        <form action="{{ route('transaction.export-excel') }}" method="POST" target="__blank">
+                            @csrf
+                            <x-primary-button color="yellow-main" type="submit">
+                                <x-lucide-download class="w-5" /> Export Excel
+                            </x-primary-button>
+                        </form>
+                    </div>
+                @endif
                 @if ($role === 'Cashier')
                     <div class="w-fit">
                         <x-secondary-button color='red-main'
@@ -51,8 +53,8 @@
                     <th class="border-b border-r">Total Price</th>
                     <th class="border-b border-r">Pay Amount</th>
                     <th class="border-b border-r">Change Amount</th>
-                    <th class="border-b border-r" style="width: 14%">Status</th>
-                    <th class="border-b" style="width: 12%">Actions</th>
+                    <th class="border-b border-r">Status</th>
+                    <th class="border-b" style="width: 15%">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,7 +65,7 @@
                         <td class="border border-white p-2 text-center">${{ $transaction->total_price }}</td>
                         <td class="border border-white p-2 text-center">${{ $transaction->pay_amount }}</td>
                         <td class="border border-white p-2 text-center">${{ $transaction->change_amount }}</td>
-                        <td class="border border-white p-2 text-center">{{ $transaction->transaction_status ? 'Success ✅' : 'Pending ❌' }}</td>
+                        <td class="border border-white p-2 text-center">{!! $transaction->transaction_status ? "<span class='px-3 py-1 bg-green-500 rounded-md text-white text-sm font-medium'>Success</span>" : "<span class='px-3 py-1 bg-orange-500 rounded-md text-sm font-medium'>Pending</span>" !!}</td>
                         <td class="border-b border-white">
                             <div class="flex justify-center items-center gap-1">
                                 <x-icon-button color='cyan'
@@ -262,31 +264,7 @@
         </div>
     </x-modal>
 
-    @if (session('success') || $errors->any())
-        <div id="alert" class="fixed bottom-4 right-4 z-10 transition-opacity duration-700">
-            <div class="p-4 font-semibold rounded-md flex justify-center items-center {{ session('success') ? 'bg-green-500' : 'bg-red-500 text-white-main' }}">
-                @if (session('success'))
-                    <x-lucide-circle-check class="w-10 mr-1" />| {{ session('success') }}
-                @else
-                    <x-lucide-circle-x class="w-10 mr-1" />| {{ $errors->first() }}
-                @endif
-            </div>
-        </div>
-
-        <script>
-            const alert = document.getElementById('alert');
-
-            if (alert) {
-                setTimeout(() => {
-                    alert.classList.add('opacity-0');
-                    
-                    setTimeout(() => {
-                        alert.remove();
-                    }, 700)
-                }, 3000);
-            }
-        </script>
-    @endif
+    <x-toast />
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -392,5 +370,4 @@
             });
         });
     </script>
-    
 </x-layout>

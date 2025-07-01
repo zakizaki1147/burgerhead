@@ -14,9 +14,8 @@ class TransactionController extends Controller
     public function index()
     {
         $transactions = Transaction::with(['orderGroup.customer'])->paginate(10);
-
+        $totalTransactions = Transaction::count();
         $unpaidOrderGroups = OrderGroup::with(['customer', 'table'])->where('order_status', false)->get();
-
         $transactionOrderGroups = collect();
 
         foreach ($transactions as $transaction) {
@@ -40,6 +39,7 @@ class TransactionController extends Controller
         return view('transaction', [
             'title' => 'Transaction',
             'transactions' => $transactions,
+            'totalTransactions' => $totalTransactions,
             'unpaidOrderGroups' => $unpaidOrderGroups,
             'unpaidOrderGroupsJson' => $unpaidOrderGroups,
             'allOrderGroups' => $allOrderGroups

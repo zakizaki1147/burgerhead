@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         const menus = JSON.parse(attr.value);
                         menus.forEach(menu => {
                             const li = document.createElement('li');
-                            li.textContent = `${menu.menu_name} x${menu.menu_amount}`;
+                            li.textContent = `${menu.menu_name} - ${menu.menu_amount}pc(s)`;
                             menuList.appendChild(li);
                         });
                     }
@@ -105,28 +105,60 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             modal.classList.remove('hidden');
+            modal.classList.add('opacity-0');
+
+            requestAnimationFrame(() => {
+                modal.classList.remove('opacity-0');
+                modal.classList.add('opacity-100');
+            })
             document.body.style.overflow = 'hidden';
         });
     });
+
+    function resetForm(modal) {
+        const form = modal.querySelector('form');
+        if (!form) return;
+
+        form.reset();
+
+        const allSelects = form.querySelectorAll('.menu-select');
+        allSelects.forEach(select => {
+            select.value = '';
+            const options = select.querySelectorAll('option');
+            options.forEach(option => option.hidden = false);
+        });
+
+        const menuList = form.querySelector('.menu-list');
+        if (menuList) {
+            const menuGroups = menuList.querySelectorAll('.menu-group');
+            menuGroups.forEach((group, index) => {
+                if (index > 0) group.remove();
+            });
+        }
+
+        const addOrderTotalPrice = form.querySelector('#addOrderTotalPrice');
+        if (addOrderTotalPrice) {
+            addOrderTotalPrice.textContent = '0';
+        }
+
+        const addMenuButton = form.querySelector('.add-menu-button');
+        if (addMenuButton) {
+            addMenuButton.classList.remove('hidden');
+        }
+    }
 
     closeModalButtons.forEach(button => {
         button.addEventListener('click', () => {
             const modal = button.closest('[data-modal]');
             if (modal) {
-                const form = modal.querySelector('form');
-                if (form) {
-                    form.reset();
+                resetForm(modal);
+                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0');
 
-                    const menuList = form.querySelector('.menu-list');
-                    if (menuList) {
-                        const menuGroups = menuList.querySelectorAll('.menu-group');
-                        menuGroups.forEach((group, index) => {
-                            if (index > 0) group.remove();
-                        });
-                    }
-                }
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 200);
 
-                modal.classList.add('hidden');
                 document.body.style.overflow = '';
             }
         });
@@ -136,20 +168,14 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.addEventListener('click', (e) => {
             const content = modal.querySelector('[data-modal-content]');
             if (content && !content.contains(e.target)) {
-                const form = modal.querySelector('form');
-                if (form) {
-                    form.reset();
+                resetForm(modal);
+                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0');
 
-                    const menuList = form.querySelector('.menu-list');
-                    if (menuList) {
-                        const menuGroups = menuList.querySelectorAll('.menu-group');
-                        menuGroups.forEach((group, index) => {
-                            if (index > 0) group.remove();
-                        });
-                    }
-                }
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 200);
 
-                modal.classList.add('hidden');
                 document.body.style.overflow = '';
             }
         });

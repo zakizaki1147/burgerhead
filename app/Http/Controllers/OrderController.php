@@ -24,16 +24,15 @@ class OrderController extends Controller
         ])->orderBy('order_group_id', 'asc')->get();
 
         $groupedOrders = $orders->groupBy('order_group_id');
-
+        $totalOrderGroups = OrderGroup::count();
         $customers = Customer::all();
-
         $availableTables = Table::where('table_status', true)->orderBy('table_id')->get();
-
         $menus = Menu::all();
 
         return view('order', [
             'title' => 'Order',
             'groupedOrders' => $groupedOrders,
+            'totalOrderGroups' => $totalOrderGroups,
             'customers' => $customers,
             'availableTables' => $availableTables,
             'menus' => $menus

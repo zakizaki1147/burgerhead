@@ -5,7 +5,7 @@
     @endphp
     <div class="w-full bg-white px-8 py-6 flex flex-col gap-2 rounded-lg shadow-lg">
         <div class="flex justify-between items-center">
-            <h1 class="text-red-main text-xl font-bold">{{ $title }} List</h1>
+            <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">{{ $title }} List</h1>
             @if ($role === 'Administrator')
                 <div class="w-fit">
                     <x-secondary-button color='red-main'
@@ -36,7 +36,7 @@
                         <td class="border-b border-r border-white p-2 text-center font-bold">{{ $tables->firstItem() + $loop->index }}</td>
                         <td class="border border-white p-2 text-center">Table #{{ $table->table_id }}</td>
                         <td class="border border-white p-2 text-center">{{ $table->table_capacity }} Seats</td>
-                        <td class="border border-white p-2 text-center">{{ $table->table_status ? 'Available ✅' : 'Occupied ❌' }}</td>
+                        <td class="border border-white p-2 text-center">{!! $table->table_status ? "<span class='px-3 py-1 bg-green-500 rounded-md text-white text-sm font-medium'>Available</span>" : "<span class='px-3 py-1 bg-red-500 rounded-md text-white text-sm font-medium'>Occupied</span>" !!}</td>
                         <td class="border-b border-white">
                             <div class="flex justify-center items-center gap-1">
                                 <x-icon-button color='cyan'
@@ -174,29 +174,5 @@
         </div>
     </x-modal>
 
-    @if (session('success') || $errors->any())
-        <div id="alert" class="fixed bottom-4 right-4 z-10 transition-opacity duration-700">
-            <div class="p-4 font-semibold rounded-md flex justify-center items-center {{ session('success') ? 'bg-green-500' : 'bg-red-500 text-white-main' }}">
-                @if (session('success'))
-                    <x-lucide-circle-check class="w-10 mr-1" />| {{ session('success') }}
-                @else
-                    <x-lucide-circle-x class="w-10 mr-1" />| {{ $errors->first() }}
-                @endif
-            </div>
-        </div>
-
-        <script>
-            const alert = document.getElementById('alert');
-
-            if (alert) {
-                setTimeout(() => {
-                    alert.classList.add('opacity-0');
-                    
-                    setTimeout(() => {
-                        alert.remove();
-                    }, 700)
-                }, 3000);
-            }
-        </script>
-    @endif
+    <x-toast />
 </x-layout>

@@ -21,7 +21,7 @@ class DashboardController extends Controller
         $totalTransactions = Transaction::count();
         $totalUsers = User::count();
 
-        $unpaidOrders = OrderGroup::where('order_status', false)->get();
+        $unpaidOrders = OrderGroup::with(['customer', 'table', 'orders.menu'])->where('order_status', false)->get();
 
         return view('dashboard', [
             'title' => 'Dashboard',

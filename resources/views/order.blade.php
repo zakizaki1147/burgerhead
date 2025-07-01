@@ -20,14 +20,16 @@
         <div class="flex justify-between items-center">
             <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">{{ $title }} List</h1>
             <div class="flex justify-center items-center gap-2">
-                <div class="w-fit">
-                    <form action="{{ route('order.export-excel') }}" method="POST" target="__blank">
-                        @csrf
-                        <x-primary-button color='yellow-main' type="submit">
-                            <x-lucide-download class="w-5" />Export Excel
-                        </x-primary-button>
-                    </form>
-                </div>
+                @if ($totalOrderGroups > 0)
+                    <div class="w-fit">
+                        <form action="{{ route('order.export-excel') }}" method="POST" target="__blank">
+                            @csrf
+                            <x-primary-button color='yellow-main' type="submit">
+                                <x-lucide-download class="w-5" />Export Excel
+                            </x-primary-button>
+                        </form>
+                    </div>
+                @endif
                 @if ($role === 'Waiter')
                     <div class="w-fit">
                         <x-secondary-button color='red-main'
@@ -51,6 +53,7 @@
                     <th class="border-b border-r">Customer Name</th>
                     <th class="border-b border-r">Menu Ordered</th>
                     <th class="border-b border-r">Amount</th>
+                    <th class="border-b border-r">Total Price</th>
                     <th class="border-b border-r">Table</th>
                     <th class="border-b border-r">Status</th>
                     <th class="border-b" style="width: 12%">Actions</th>
@@ -58,7 +61,7 @@
             </thead>
             <tbody>
                 @php
-                    $no = 1;
+                    $no = 1
                 @endphp
                 @forelse ($groupedOrders as $groupId => $orders)
                     @php
@@ -69,6 +72,9 @@
                             'menu_name' => $order->menu->menu_name,
                             'menu_amount' => $order->menu_amount
                         ]);
+                        $totalPrice = $orders->reduce(function ($carry, $order) {
+                            return $carry + ($order->menu->price * $order->menu_amount);
+                        }, 0);
                     @endphp
                     @foreach ($orders as $index => $order)
                         <tr class="{{ $bgClass }} text-black-main">
@@ -84,8 +90,9 @@
                             <td class="border-2 {{ $borderClass }} p-2">{{ $order->menu->menu_name }}</td>
                             <td class="border-2 {{ $borderClass }} p-2 text-center">{{ $order->menu_amount }}</td>
                             @if ($index === 0)
+                                <td class="border-2 {{ $borderClass }} p-2 text-center" rowspan="{{ $orders->count() }}">${{ $totalPrice }}</td>
                                 <td class="border-2 {{ $borderClass }} p-2 text-center" rowspan="{{ $orders->count() }}">Table #{{ $order->orderGroup->table->table_id }}</td>
-                                <td class="border-2 {{ $borderClass }} p-2 text-center" rowspan="{{ $orders->count() }}">{{ $order->orderGroup->order_status ? 'Already Paid ✅' : 'Not Yet Paid ❌' }}</td>
+                                <td class="border-2 {{ $borderClass }} p-2 text-center" rowspan="{{ $orders->count() }}">{!! $order->orderGroup->order_status ? "<span class='px-3 py-1 bg-green-500 rounded-md text-white text-sm font-medium'>Already Paid</span>" : "<span class='px-3 py-1 bg-red-500 rounded-md text-white text-sm font-medium'>Not Yet Paid</span>" !!}</td>
                                 <td class="border-b-2 {{ $borderClass }}" rowspan="{{ $orders->count() }}">
                                     <div class="flex justify-center items-center gap-1">
                                         <x-icon-button color='cyan'
@@ -94,6 +101,7 @@
                                             data-order-group-id="ORD #{{ $groupId }}-{{ $order->orderGroup->customer_id }}-{{ $order->orderGroup->table_id }}"
                                             data-customer-name="{{ $orders[0]->orderGroup->customer->customer_name }}"
                                             data-menu-list="{{ $menuList->toJSON() }}"
+                                            data-total-price="${{ $totalPrice }}"
                                             data-table-id="Table #{{ $orders[0]->orderGroup->table_id }}"
                                             data-order-status="{{ $orders[0]->orderGroup->order_status ? 'Already Paid ✅' : 'Not Yet Paid ❌' }}"
                                             data-waiter-name="{{ $orders[0]->orderGroup->user->full_name }}"
@@ -228,13 +236,13 @@
                 </div>
                 <div class="flex flex-col gap-3 pl-3 border-l">
                     <div class="menu-list flex flex-col gap-3">
-                        <div class="menu-group flex items-center gap-2">
-                            <div class="flex flex-col">
+                        <div class="menu-group flex items-center">
+                            <div class="flex flex-col mr-2">
                                 <label for="menu" class="font-bold text-sm w-fit">Menu</label>
                                 <select name="menu[]" id="menu" required class="menu-select w-60 py-2 px-1 text-sm border-2 border-black-main rounded-lg outline-none focus:bg-red-main/10 focus:border-red-main transition">
                                     <option value="" selected disabled class="bg-white">Choose Menu</option>
                                     @foreach ($menus as $menu)
-                                        <option value="{{ $menu->menu_id }}">{{ $menu->menu_name }} - ${{ $menu->price }}</option>
+                                        <option value="{{ $menu->menu_id }}" data-price="{{ $menu->price }}">{{ $menu->menu_name }} - ${{ $menu->price }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -248,7 +256,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-end items-end h-full">
-                                <x-secondary-button color="red-main" type="button" class="remove-menu-button h-10 hidden">
+                                <x-secondary-button color="red-main" type="button" class="remove-menu-button h-10 ml-2 hidden">
                                     <x-lucide-minus-circle class="w-5"></x-lucide-minus-circle>Remove
                                 </x-secondary-button>
                             </div>
@@ -263,12 +271,18 @@
             </div>
             <div class="flex flex-col justify-center items-end gap-3">
                 <hr class="w-full border border-black-main" />
-                <div class="w-1/3 flex gap-3">
-                    <div class="w-1/2">
-                        <x-secondary-button color='red-main' type="button" data-close-modal>Cancel</x-secondary-button>
+                <div class="w-full flex justify-between items-center">
+                    <div class="flex gap-1 items-center">
+                        <h3 class="text-gray-500">Total:</h3>
+                        <h2 class="font-bold text-lg">$<span id="addOrderTotalPrice">0</span></h2>
                     </div>
-                    <div class="w-1/2">
-                        <x-primary-button color='red-main' type="submit">Add</x-primary-button>
+                    <div class="w-1/3 flex gap-3">
+                        <div class="w-1/2">
+                            <x-secondary-button color='red-main' type="button" data-close-modal>Cancel</x-secondary-button>
+                        </div>
+                        <div class="w-1/2">
+                            <x-primary-button color='red-main' type="submit">Add</x-primary-button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -285,6 +299,8 @@
             <span class="flex gap-5">:
                 <ul id="modalMenuList" class="list-decimal"></ul>
             </span>
+            <p>Total Price</p>
+            <p>: <span id="modalTotalPrice"></span></p>
             <p>Table Name</p>
             <p>: <span id="modalTableId"></span></p>
             <p>Order Status</p>
@@ -331,13 +347,13 @@
                 </div>
                 <div class="flex flex-col gap-3 pl-3 border-l">
                     <div class="menu-list flex flex-col gap-3">
-                        <div class="menu-group flex items-center gap-2">
-                            <div class="flex flex-col">
+                        <div class="menu-group flex items-center">
+                            <div class="flex flex-col mr-2">
                                 <label for="menu" class="font-bold text-sm w-fit">Menu</label>
                                 <select name="menu[]" required class="menu-select w-60 py-2 px-1 text-sm border-2 border-black-main rounded-lg outline-none focus:bg-red-main/10 focus:border-red-main transition">
                                     <option value="" selected disabled class="bg-white">Choose Menu</option>
                                     @foreach ($menus as $menu)
-                                        <option value="{{ $menu->menu_id }}">{{ $menu->menu_name }} - ${{ $menu->price }}</option>
+                                        <option value="{{ $menu->menu_id }}" data-price="{{ $menu->price }}">{{ $menu->menu_name }} - ${{ $menu->price }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -351,7 +367,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-end items-end h-full">
-                                <x-secondary-button color="red-main" type="button" class="remove-menu-button h-10 hidden">
+                                <x-secondary-button color="red-main" type="button" class="remove-menu-button h-10 ml-2 hidden">
                                     <x-lucide-minus-circle class="w-5"></x-lucide-minus-circle>Remove
                                 </x-secondary-button>
                             </div>
@@ -366,12 +382,18 @@
             </div>
             <div class="flex flex-col justify-center items-end gap-3">
                 <hr class="w-full border border-black-main" />
-                <div class="w-1/3 flex gap-3">
-                    <div class="w-1/2">
-                        <x-secondary-button color='red-main' type="button" data-close-modal>Cancel</x-secondary-button>
+                <div class="w-full flex justify-between items-center">
+                    <div class="flex gap-1 items-center">
+                        <h3 class="text-gray-500">Total:</h3>
+                        <h2 class="font-bold text-lg">$<span id="updateOrderTotalPrice">0</span></h2>
                     </div>
-                    <div class="w-1/2">
-                        <x-primary-button color='red-main' type="submit">Update</x-primary-button>
+                    <div class="w-1/3 flex gap-3">
+                        <div class="w-1/2">
+                            <x-secondary-button color='red-main' type="button" data-close-modal>Cancel</x-secondary-button>
+                        </div>
+                        <div class="w-1/2">
+                            <x-primary-button color='red-main' type="submit">Update</x-primary-button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -395,29 +417,5 @@
         </div>
     </x-modal>
 
-    @if (session('success') || $errors->any())
-        <div id="alert" class="fixed bottom-4 right-4 z-10 transition-opacity duration-700">
-            <div class="p-4 font-semibold rounded-md flex justify-center items-center {{ session('success') ? 'bg-green-500' : 'bg-red-500 text-white-main' }}">
-                @if (session('success'))
-                    <x-lucide-circle-check class="w-10 mr-1" />| {{ session('success') }}
-                @else
-                    <x-lucide-circle-x class="w-10 mr-1" />| {{ $errors->first() }}
-                @endif
-            </div>
-        </div>
-
-        <script>
-            const alert = document.getElementById('alert');
-
-            if (alert) {
-                setTimeout(() => {
-                    alert.classList.add('opacity-0');
-                    
-                    setTimeout(() => {
-                        alert.remove();
-                    }, 700)
-                }, 3000);
-            }
-        </script>
-    @endif
+    <x-toast />
 </x-layout>

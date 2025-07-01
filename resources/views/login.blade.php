@@ -27,5 +27,7 @@
             <x-primary-button color='yellow-main' type="submit">Log In</x-primary-button>
         </form>
     </div>
+
+    <x-toast />
 </body>
 </html>

@@ -29,15 +29,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
             attachHandlers(modal);
             updateRemoveButtons(modal);
-            updateMenuOptions();
+            updateMenuOptions(modal);
 
             if (currentCount + 1 >= 5) {
                 addMenuButton.classList.add('hidden');
             }
         });
 
-        updateRemoveButtons(modal); // Cek awal jika sudah 5
-        updateMenuOptions();
+        updateRemoveButtons(modal);
+        updateMenuOptions(modal);
     }
 
     // Fungsi attach handler (khusus untuk modal tertentu)
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const allSelects = modal.querySelectorAll('.menu-select');
 
         allSelects.forEach(select => {
-            select.onchange = updateMenuOptions;
+            select.onchange = updateMenuOptions(modal);
         });
 
         decreaseButtons.forEach(button => {
@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (currentValue > 1) {
                     amountInput.value = currentValue - 1;
                 }
+                updateTotalPrice(modal);
             };
         });
 
@@ -65,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             button.onclick = () => {
                 const amountInput = button.closest('.menu-group').querySelector('.amount-input');
                 amountInput.value = parseInt(amountInput.value) + 1;
+                updateTotalPrice(modal);
             };
         });
 
@@ -77,8 +79,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 button.closest('.menu-group').remove();
 
                 updateRemoveButtons(modal);
-                updateMenuOptions();
-                updateModal();
+                updateMenuOptions(modal);
+                // updateModal();
+                updateTotalPrice(modal);
 
                 // Munculkan lagi tombol Add kalau kurang dari 5
                 if (menuList.querySelectorAll('.menu-group').length < 5) {
@@ -108,8 +111,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function updateMenuOptions() {
-        const allSelects = document.querySelectorAll('.menu-select');
+    function updateMenuOptions(modal) {
+        const allSelects = modal.querySelectorAll('.menu-select');
         const selectedValues = Array.from(allSelects).map(select => select.value).filter(value => value !== '');
 
         allSelects.forEach(select => {
@@ -122,6 +125,33 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     }
+
+    function updateTotalPrice(modal) {
+        let total = 0;
+        const menuGroups = modal.querySelectorAll('.menu-group');
+
+        menuGroups.forEach(group => {
+            const menuSelect = group.querySelector('.menu-select');
+            const amountInput = group.querySelector('.amount-input');
+            const price = parseFloat(menuSelect.selectedOptions[0]?.dataset.price || 0);
+            const amount = parseInt(amountInput.value || 0);
+            total += price * amount;
+        });
+
+        const totalPriceDisplay = modal.querySelector('#addOrderTotalPrice') || modal.querySelector('#updateOrderTotalPrice');
+        if (totalPriceDisplay) {
+            totalPriceDisplay.textContent = total;
+        }
+    }
+
+    document.addEventListener('input', function (e) {
+        if (e.target.classList.contains('amount-input') || e.target.classList.contains('menu-select')) {
+            const modal = e.target.closest('[data-modal]');
+            if (modal) {
+                updateTotalPrice(modal);
+            }
+        }
+    })
 
     // Setup untuk masing-masing modal
     if (updateModal) initModal(updateModal);
@@ -147,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         attachHandlers(updateModal);
         updateRemoveButtons(updateModal);
-        updateMenuOptions();
+        updateMenuOptions(updateModal);
+        updateTotalPrice(updateModal);
     }
 });

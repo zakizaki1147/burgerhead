@@ -28,7 +28,7 @@ Route::middleware(['auth'])->group(function () {
 //     return view('dashboard', ['title' => 'Dashboard']);
 // });
 
-Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index')->middleware('role:Administrator,Waiter,Owner');
+Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index')->middleware('role:Waiter,Owner');
 
 Route::post('/customer', [CustomerController::class, 'store'])->name('customer.store');
 

@@ -189,7 +189,7 @@
             <div class="flex flex-col">
                 <label for="password" class="font-bold text-sm w-fit">Password</label>
                 <input type="password" name="password" id="password" placeholder="********" autocomplete="off" required readonly
-                class="w-90 p-2 text-sm border-2 border-black-main rounded-lg outline-none focus:bg-red-main/10 focus:border-red-main cursor-not-allowed transition">
+                class="w-90 p-2 text-sm border-2 border-black-main rounded-lg outline-none cursor-not-allowed">
             </div>
             <div class="flex flex-col">
                 <label for="role" class="font-bold text-sm w-fit">Role</label>
@@ -230,29 +230,5 @@
         </div>
     </x-modal>
 
-    @if (session('success') || $errors->any())
-        <div id="alert" class="fixed bottom-4 right-4 z-10 transition-opacity duration-700">
-            <div class="p-4 font-semibold rounded-md flex justify-center items-center {{ session('success') ? 'bg-green-500' : 'bg-red-500 text-white-main' }}">
-                @if (session('success'))
-                    <x-lucide-circle-check class="w-10 mr-1" />| {{ session('success') }}
-                @else
-                    <x-lucide-circle-x class="w-10 mr-1" />| {{ $errors->first() }}
-                @endif
-            </div>
-        </div>
-
-        <script>
-            const alert = document.getElementById('alert');
-
-            if (alert) {
-                setTimeout(() => {
-                    alert.classList.add('opacity-0');
-                    
-                    setTimeout(() => {
-                        alert.remove();
-                    }, 700)
-                }, 3000);
-            }
-        </script>
-    @endif
+    <x-toast />
 </x-layout>

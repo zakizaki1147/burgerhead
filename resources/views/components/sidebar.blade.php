@@ -10,10 +10,6 @@
             $role = Auth::user()->role;
         @endphp
         @if ($role === 'Administrator')
-            <a href="/customer" class="{{ request()->is('customer') ? 'bg-black-main font-bold cursor-default' : 'bg-red-main font-medium hover:bg-black-main/70 active:bg-black-main' }} w-full flex gap-2 p-2 text-white-main rounded-lg transition">
-                <x-lucide-users class="w-6" />
-                <h2>Customer</h2>
-            </a>
             <a href="/menu" class="{{ request()->is('menu') ? 'bg-black-main font-bold cursor-default' : 'bg-red-main font-medium hover:bg-black-main/70 active:bg-black-main' }} w-full flex gap-2 p-2 text-white-main rounded-lg transition">
                 <x-lucide-sandwich class="w-6" />
                 <h2>Menu</h2>
@@ -122,7 +118,7 @@
     <hr class="w-full border border-black-main" />
     <div class="w-full flex gap-3">
         <div class="w-1/2">
-            <x-secondary-button color='red-main' id="closeModalLogout">Cancel</x-secondary-button>
+            <x-secondary-button color='red-main' type="button" data-close-modal>Cancel</x-secondary-button>
         </div>
         <form action="{{ route('logout') }}" method="POST" class="w-1/2">
             @csrf
