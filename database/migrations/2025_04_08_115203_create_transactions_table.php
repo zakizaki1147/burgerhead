@@ -16,9 +16,9 @@ return new class extends Migration
             $table->foreignId('order_group_id')->constrained(
                 table: 'order_groups', indexName: 'transactions_order_group_id'
             )->references('order_group_id')->onDelete('cascade');
-            $table->integer('total_price');
-            $table->integer('pay_amount');
-            $table->integer('change_amount');
+            $table->decimal('total_price', 8, 2);
+            $table->decimal('pay_amount', 8, 2);
+            $table->decimal('change_amount', 8, 2);
             $table->boolean('transaction_status')->default(false);
             $table->foreignId('user_id')->constrained(
                 table: 'users', indexName: 'transactions_user_id'

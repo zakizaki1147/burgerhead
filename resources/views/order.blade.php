@@ -16,7 +16,7 @@
     @php
         $role = Auth::user()->role;
     @endphp
-    <div class="w-full bg-white px-8 py-6 flex flex-col gap-2 rounded-lg shadow-lg">
+    <div class="w-full bg-white p-5 flex flex-col gap-2 rounded-lg shadow-lg">
         <div class="flex justify-between items-center">
             <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">{{ $title }} List</h1>
             <div class="flex justify-center items-center gap-2">
@@ -72,16 +72,13 @@
                             'menu_name' => $order->menu->menu_name,
                             'menu_amount' => $order->menu_amount
                         ]);
-                        $totalPrice = $orders->reduce(function ($carry, $order) {
-                            return $carry + ($order->menu->price * $order->menu_amount);
-                        }, 0);
                     @endphp
                     @foreach ($orders as $index => $order)
                         <tr class="{{ $bgClass }} text-black-main">
                             @if ($index === 0)
                                 <td class="border-b-2 border-r-2 {{ $borderClass }} p-2 text-center font-bold" rowspan="{{ $orders->count() }}">{{ $no }}</td>
                                 <td class="border-2 {{ $borderClass }} p-2 text-center" rowspan="{{ $orders->count() }}">
-                                    ORD#{{ $groupId }}-{{ $order->orderGroup->customer_id }}-{{ $order->orderGroup->table_id }}
+                                    ORD #{{ $groupId }}-{{ $order->orderGroup->customer_id }}-{{ $order->orderGroup->table_id }}
                                 </td>
                                 <td class="border-2 {{ $borderClass }} p-2" rowspan="{{ $orders->count() }}">
                                     {{ $order->orderGroup->customer->customer_name }}
@@ -90,7 +87,7 @@
                             <td class="border-2 {{ $borderClass }} p-2">{{ $order->menu->menu_name }}</td>
                             <td class="border-2 {{ $borderClass }} p-2 text-center">{{ $order->menu_amount }}</td>
                             @if ($index === 0)
-                                <td class="border-2 {{ $borderClass }} p-2 text-center" rowspan="{{ $orders->count() }}">${{ $totalPrice }}</td>
+                                <td class="border-2 {{ $borderClass }} p-2 text-center" rowspan="{{ $orders->count() }}">${{ number_format($orders->total_price, 2) }}</td>
                                 <td class="border-2 {{ $borderClass }} p-2 text-center" rowspan="{{ $orders->count() }}">Table #{{ $order->orderGroup->table->table_id }}</td>
                                 <td class="border-2 {{ $borderClass }} p-2 text-center" rowspan="{{ $orders->count() }}">{!! $order->orderGroup->order_status ? "<span class='px-3 py-1 bg-green-500 rounded-md text-white text-sm font-medium'>Already Paid</span>" : "<span class='px-3 py-1 bg-red-500 rounded-md text-white text-sm font-medium'>Not Yet Paid</span>" !!}</td>
                                 <td class="border-b-2 {{ $borderClass }}" rowspan="{{ $orders->count() }}">
@@ -101,7 +98,7 @@
                                             data-order-group-id="ORD #{{ $groupId }}-{{ $order->orderGroup->customer_id }}-{{ $order->orderGroup->table_id }}"
                                             data-customer-name="{{ $orders[0]->orderGroup->customer->customer_name }}"
                                             data-menu-list="{{ $menuList->toJSON() }}"
-                                            data-total-price="${{ $totalPrice }}"
+                                            data-total-price="${{ number_format($orders->total_price, 2) }}"
                                             data-table-id="Table #{{ $orders[0]->orderGroup->table_id }}"
                                             data-order-status="{{ $orders[0]->orderGroup->order_status ? 'Already Paid ✅' : 'Not Yet Paid ❌' }}"
                                             data-waiter-name="{{ $orders[0]->orderGroup->user->full_name }}"
@@ -145,68 +142,7 @@
                         <td class="text-center py-10 bg-white-main" colspan="9">There is no data :(</td>
                     </tr>
                 @endforelse
-
-                {{-- @forelse ($orders as $order)
-                    <tr class="{{ $loop->even ? 'bg-white-main' : 'bg-white'}} text-black-main">
-                        <td class="border-b border-r border-white p-2 text-center">{{ $orders->firstItem() + $loop->index }}</td>
-                        <td class="border border-white p-2 text-center">ORD#{{ $order->order_group_id }}-{{ $order->orderGroup->customer_id }}-{{ $order->orderGroup->table_id }}</td>
-                        <td class="border border-white p-2">{{ $order->orderGroup->customer->customer_name }}</td>
-                        <td class="border border-white p-2">{{ $order->menu->menu_name }}</td>
-                        <td class="border border-white p-2 text-center">{{ $order->menu_amount }}</td>
-                        <td class="border border-white p-2">{{ $order->orderGroup->user->full_name }}</td>
-                        <td class="border border-white p-2">Table #{{ $order->orderGroup->table->table_id }}</td>
-                        <td class="border-b border-white">
-                            <div class="flex justify-center items-center gap-1">
-                                <x-icon-button color='cyan'
-                                    data-open-modal="modalOrderDetail"
-                                    data-type="detail"
-                                    data-order-id="{{ $order->order_id }}"
-                                    data-order-group-id="{{ $order->order_group_id }}"
-                                    data-customer-name="{{ $order->orderGroup->customer->customer_name }}"
-                                    data-menu-name="{{ $order->menu->menu_name }}"
-                                    data-menu-amount="{{ $order->menu_amount }}"
-                                    data-waiter-name="{{ $order->orderGroup->user->full_name }}"
-                                    data-table-name="{{ $order->orderGroup->table_id }}"
-                                    data-created-at="{{ $order->created_at }}"
-                                    data-updated-at="{{ $order->updated_at }}"
-                                >
-                                    <x-lucide-info class="w-6" />
-                                </x-icon-button>
-                                |
-                                <x-icon-button color='yellow'
-                                    data-open-modal="modalUpdateOrder"
-                                    data-type="update"
-                                    data-update-url="{{ route('order.update', $order->order_group_id) }}"
-                                    data-target-form="formUpdateOrder"
-                                    data-customer-id="{{ $order->orderGroup->customer_id }}"
-                                    data-menu-name="{{ $order->menu_id }}"
-                                    data-menu-amount="{{ $order->menu_amount }}"
-                                    data-table-id="{{ $order->orderGroup->table_id }}"
-                                >
-                                    <x-lucide-pen class="w-6" />
-                                </x-icon-button>
-                                |
-                                <x-icon-button color='red'
-                                    data-open-modal="modalDeleteOrder"
-                                    data-type="delete"
-                                    data-delete-url="{{ route('order.destroy', $order->order_group_id) }}"
-                                >
-                                    <x-lucide-trash-2 class="w-6" />
-                                </x-icon-button>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td class="text-center py-10 bg-white-main" colspan="8">There is no data :(</td>
-                    </tr>
-                @endforelse --}}
             </tbody>
-            {{-- <tfoot>
-                <td colspan="8">
-                    {{ $orders->links('vendor.pagination.tailwind') }}
-                </td>
-            </tfoot> --}}
         </table>
     </div>
 
@@ -242,7 +178,7 @@
                                 <select name="menu[]" id="menu" required class="menu-select w-60 py-2 px-1 text-sm border-2 border-black-main rounded-lg outline-none focus:bg-red-main/10 focus:border-red-main transition">
                                     <option value="" selected disabled class="bg-white">Choose Menu</option>
                                     @foreach ($menus as $menu)
-                                        <option value="{{ $menu->menu_id }}" data-price="{{ $menu->price }}">{{ $menu->menu_name }} - ${{ $menu->price }}</option>
+                                        <option value="{{ $menu->menu_id }}" data-price="{{ number_format($menu->price, 2) }}">{{ $menu->menu_name }} - ${{ number_format($menu->price, 2) }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -264,7 +200,7 @@
                     </div>
                     <div class="flex flex-1 justify-end items-end">
                         <x-secondary-button color="red-main" type="button" class="add-menu-button h-10">
-                            <x-lucide-plus-circle class="w-5"></x-lucide-plus-circle>Add Menu
+                            <x-lucide-plus-circle class="w-5"></x-lucide-plus-circle>Add Menu (Max: 5 Menus)
                         </x-secondary-button>
                     </div>
                 </div>
@@ -274,7 +210,7 @@
                 <div class="w-full flex justify-between items-center">
                     <div class="flex gap-1 items-center">
                         <h3 class="text-gray-500">Total:</h3>
-                        <h2 class="font-bold text-lg">$<span id="addOrderTotalPrice">0</span></h2>
+                        <h2 class="font-bold text-lg">$<span id="addOrderTotalPrice">0.00</span></h2>
                     </div>
                     <div class="w-1/3 flex gap-3">
                         <div class="w-1/2">
@@ -353,7 +289,7 @@
                                 <select name="menu[]" required class="menu-select w-60 py-2 px-1 text-sm border-2 border-black-main rounded-lg outline-none focus:bg-red-main/10 focus:border-red-main transition">
                                     <option value="" selected disabled class="bg-white">Choose Menu</option>
                                     @foreach ($menus as $menu)
-                                        <option value="{{ $menu->menu_id }}" data-price="{{ $menu->price }}">{{ $menu->menu_name }} - ${{ $menu->price }}</option>
+                                        <option value="{{ $menu->menu_id }}" data-price="{{ number_format($menu->price, 2) }}">{{ $menu->menu_name }} - ${{ number_format($menu->price, 2) }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -375,7 +311,7 @@
                     </div>
                     <div class="flex flex-1 justify-end items-end">
                         <x-secondary-button color="red-main" type="button" class="add-menu-button h-10">
-                            <x-lucide-plus-circle class="w-5"></x-lucide-plus-circle>Add Menu
+                            <x-lucide-plus-circle class="w-5"></x-lucide-plus-circle>Add Menu (Max: 5 Menus)
                         </x-secondary-button>
                     </div>
                 </div>

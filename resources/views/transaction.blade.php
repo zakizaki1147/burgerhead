@@ -16,7 +16,7 @@
     @php
         $role = Auth::user()->role;
     @endphp
-    <div class="w-full bg-white px-8 py-6 flex flex-col gap-2 rounded-lg shadow-lg">
+    <div class="w-full bg-white p-5 flex flex-col gap-2 rounded-lg shadow-lg">
         <div class="flex justify-between items-center">
             <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">{{ $title }} List</h1>
             <div class="flex justify-center items-center gap-2">
@@ -62,9 +62,9 @@
                     <tr class="{{ $loop->even ? 'bg-white-main' : 'bg-white'}} text-black-main">
                         <td class="border-b border-r border-white p-2 text-center font-bold">{{ $transactions->firstItem() + $loop->index }}</td>
                         <td class="border border-white p-2 text-center">ORD #{{ $transaction->order_group_id }}-{{ $transaction->orderGroup->customer_id }}-{{ $transaction->orderGroup->table_id }}</td>
-                        <td class="border border-white p-2 text-center">${{ $transaction->total_price }}</td>
-                        <td class="border border-white p-2 text-center">${{ $transaction->pay_amount }}</td>
-                        <td class="border border-white p-2 text-center">${{ $transaction->change_amount }}</td>
+                        <td class="border border-white p-2 text-center">${{ number_format($transaction->total_price, 2) }}</td>
+                        <td class="border border-white p-2 text-center">${{ number_format($transaction->pay_amount, 2) }}</td>
+                        <td class="border border-white p-2 text-center">${{ number_format($transaction->change_amount, 2) }}</td>
                         <td class="border border-white p-2 text-center">{!! $transaction->transaction_status ? "<span class='px-3 py-1 bg-green-500 rounded-md text-white text-sm font-medium'>Success</span>" : "<span class='px-3 py-1 bg-orange-500 rounded-md text-sm font-medium'>Pending</span>" !!}</td>
                         <td class="border-b border-white">
                             <div class="flex justify-center items-center gap-1">
@@ -97,6 +97,14 @@
                                     >
                                         <x-lucide-pen class="w-6" />
                                     </x-icon-button>
+                                    |
+                                    <form action="{{ route('transaction.print-receipt') }}" method="post" target="_blank">
+                                        @csrf
+                                        <input type="hidden" name="transaction_id" value="{{ $transaction->transaction_id }}">
+                                        <x-icon-button color='orange' type='submit'>
+                                            <x-lucide-printer class="w-6" />
+                                        </x-icon-button>
+                                    </form>
                                     |
                                     <x-icon-button color='red'
                                         data-open-modal="modalDeleteTransaction"
@@ -283,7 +291,7 @@
                 createSelect.addEventListener('change', (e) => {
                     const group = unpaidOrderGroups.find(g => g.order_group_id == e.target.value);
                     if (group) {
-                        createTotalPrice = group.total_price;
+                        createTotalPrice = parseFloat(group.total_price).toFixed(2);
                         createTotal.value = createTotalPrice;
                         createPay.value = '';
                         createChange.value = '';
@@ -293,14 +301,15 @@
                 });
     
                 createPay?.addEventListener('input', (e) => {
-                    const pay = parseInt(e.target.value);
+                    const pay = parseFloat(e.target.value);
                     if (isNaN(pay) || pay < createTotalPrice) {
                         createChange.value = '';
                         createAlert.textContent = 'Pay amount is less than total price!';
                         createAlert.classList.remove('hidden');
                         createChange.classList.add('hidden');
                     } else {
-                        createChange.value = pay - createTotalPrice;
+                        const change = (pay - createTotalPrice).toFixed(2);
+                        createChange.value = change;
                         createAlert.classList.add('hidden');
                         createChange.classList.remove('hidden');
                     }
@@ -318,7 +327,7 @@
             updateSelect?.addEventListener('change', (e) => {
                 const group = allOrderGroups.find(g => g.order_group_id == e.target.value);
                 if (group) {
-                    updateTotalPrice = group.total_price;
+                    updateTotalPrice = parseFloat(group.total_price).toFixed(2);
                     updateTotal.value = updateTotalPrice;
                     updatePay.value = '';
                     updateChange.value = '';
@@ -328,14 +337,15 @@
             });
     
             updatePay?.addEventListener('input', (e) => {
-                const pay = parseInt(e.target.value);
+                const pay = parseFloat(e.target.value);
                 if (isNaN(pay) || pay < updateTotalPrice) {
                     updateChange.value = '';
                     updateAlert.textContent = 'Pay amount is less than total price!';
                     updateAlert.classList.remove('hidden');
                     updateChange.classList.add('hidden');
                 } else {
-                    updateChange.value = pay - updateTotalPrice;
+                    const change = parseFloat(pay - updateTotalPrice).toFixed(2);
+                    updateChange.value = change;
                     updateAlert.classList.add('hidden');
                     updateChange.classList.remove('hidden');
                 }
@@ -350,7 +360,7 @@
                     const payAmount = button.dataset.payAmount;
                     const changeAmount = button.dataset.changeAmount;
     
-                    updateTotalPrice = parseInt(totalPrice);
+                    updateTotalPrice = parseFloat(totalPrice).toFixed(2);
     
                     modal.querySelector('.order-group-select').value = String(orderGroupId);
                     modal.querySelector('.total-price-input').value = totalPrice;

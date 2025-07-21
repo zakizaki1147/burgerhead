@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -40,6 +41,12 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (Auth::user()?->user_id == $id) {
+            return back()->withErrors([
+                'error' => 'You cannot update your own role.'
+            ]);
+        }
+
         $validated = $request->validate([
             'fullName' => 'required|string|max:50',
             'username' => 'required|string|max:20|unique:users,username,' . $id . ',user_id',
@@ -59,6 +66,12 @@ class UserController extends Controller
 
     public function destroy($id)
     {
+        if (Auth::user()?->user_id == $id) {
+            return back()->withErrors([
+                'error' => 'You cannot delete your own account.'
+            ]);
+        }
+
         $user = User::findOrFail($id);
         $user->delete();
 

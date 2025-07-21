@@ -16,6 +16,7 @@
                 <th>Customer Name</th>
                 <th>Menu Ordered</th>
                 <th>Amount</th>
+                <th>Total Price</th>
                 <th>Table</th>
                 <th>Status</th>
                 <th>Waiter Name</th>
@@ -34,13 +35,16 @@
                         'menu_name' => $order->menu->menu_name,
                         'menu_amount' => $order->menu_amount
                     ]);
+                    $totalPrice = $orders->reduce(function ($carry, $order) {
+                        return $carry + ($order->menu->price * $order->menu_amount);
+                    }, 0);
                 @endphp
                 @foreach ($orders as $index => $order)
                     <tr>
                         @if ($index === 0)
                             <td rowspan="{{ $orders->count() }}">{{ $no }}</td>
                             <td rowspan="{{ $orders->count() }}">
-                                ORD#{{ $groupId }}-{{ $order->orderGroup->customer_id }}-{{ $order->orderGroup->table_id }}
+                                ORD #{{ $groupId }}-{{ $order->orderGroup->customer_id }}-{{ $order->orderGroup->table_id }}
                             </td>
                             <td rowspan="{{ $orders->count() }}">
                                 {{ $order->orderGroup->customer->customer_name }}
@@ -49,6 +53,7 @@
                         <td>{{ $order->menu->menu_name }}</td>
                         <td >{{ $order->menu_amount }}</td>
                         @if ($index === 0)
+                            <td rowspan="{{ $orders->count() }}">${{ number_format($totalPrice, 2) }}</td>
                             <td rowspan="{{ $orders->count() }}">Table #{{ $order->orderGroup->table->table_id }}</td>
                             <td rowspan="{{ $orders->count() }}">{{ $order->orderGroup->order_status ? 'Already Paid ✅' : 'Not Yet Paid ❌' }}</td>
                             <td rowspan="{{ $orders->count() }}">{{ $order->orderGroup->user->full_name }}</td>

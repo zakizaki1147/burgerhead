@@ -151,11 +151,11 @@ document.addEventListener('DOMContentLoaded', function () {
         button.addEventListener('click', () => {
             const modal = button.closest('[data-modal]');
             if (modal) {
-                resetForm(modal);
                 modal.classList.remove('opacity-100');
                 modal.classList.add('opacity-0');
-
+                
                 setTimeout(() => {
+                    resetForm(modal);
                     modal.classList.add('hidden');
                 }, 200);
 
@@ -168,11 +168,11 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.addEventListener('click', (e) => {
             const content = modal.querySelector('[data-modal-content]');
             if (content && !content.contains(e.target)) {
-                resetForm(modal);
                 modal.classList.remove('opacity-100');
                 modal.classList.add('opacity-0');
-
+                
                 setTimeout(() => {
+                    resetForm(modal);
                     modal.classList.add('hidden');
                 }, 200);
 

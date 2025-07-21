@@ -16,7 +16,7 @@
     @php
         $role = Auth::user()->role;
     @endphp
-    <div class="w-full bg-white px-8 py-6 flex flex-col gap-2 rounded-lg shadow-lg">
+    <div class="w-full bg-white p-5 flex flex-col gap-2 rounded-lg shadow-lg">
         <div class="flex justify-between items-center">
             <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">{{ $title }} List</h1>
             @if ($role === 'Administrator' || $role === 'Waiter')

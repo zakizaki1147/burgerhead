@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const totalPriceDisplay = modal.querySelector('#addOrderTotalPrice') || modal.querySelector('#updateOrderTotalPrice');
         if (totalPriceDisplay) {
-            totalPriceDisplay.textContent = total;
+            totalPriceDisplay.textContent = total.toFixed(2);
         }
     }
 

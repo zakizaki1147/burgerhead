@@ -24,6 +24,15 @@ class OrderController extends Controller
         ])->orderBy('order_group_id', 'asc')->get();
 
         $groupedOrders = $orders->groupBy('order_group_id');
+
+        $groupedOrders->transform(function ($orders) {
+            $totalPrice = $orders->reduce(function ($carry, $order) {
+                return $carry + ($order->menu->price * $order->menu_amount);
+            }, 0);
+            $orders->total_price = $totalPrice;
+            return $orders;
+        });
+
         $totalOrderGroups = OrderGroup::count();
         $customers = Customer::all();
         $availableTables = Table::where('table_status', true)->orderBy('table_id')->get();

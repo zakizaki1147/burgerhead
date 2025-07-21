@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('tables', function (Blueprint $table) {
             $table->id('table_id');
-            // $table->string('table_name');
             $table->enum('table_capacity', ['2', '4', '8']);
             $table->boolean('table_status')->default(true);
             $table->timestamps();

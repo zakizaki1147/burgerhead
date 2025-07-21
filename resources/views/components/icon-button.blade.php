@@ -3,6 +3,7 @@
 @php
     $colors = [
         'cyan' => ['text' => 'text-cyan-500', 'hover' => 'hover:bg-cyan-500', 'active' => 'active:bg-cyan-500/70'],
+        'orange' => ['text' => 'text-orange-500', 'hover' => 'hover:bg-orange-500', 'active' => 'active:bg-orange-500/70'],
         'yellow' => ['text' => 'text-yellow-500', 'hover' => 'hover:bg-yellow-500', 'active' => 'active:bg-yellow-500/70'],
         'red' => ['text' => 'text-red-500', 'hover' => 'hover:bg-red-500', 'active' => 'active:bg-red-500/70'],
         'black-main' => ['text' => 'text-white-main', 'hover' => 'hover:bg-black-main/70', 'active' => 'active:bg-black-main'],

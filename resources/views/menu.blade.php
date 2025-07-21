@@ -16,7 +16,7 @@
     @php
         $role = Auth::user()->role;
     @endphp
-    <div class="w-full bg-white px-8 py-6 flex flex-col gap-2 rounded-lg shadow-lg">
+    <div class="w-full bg-white p-5 flex flex-col gap-2 rounded-lg shadow-lg">
         <div class="flex justify-between items-center">
             <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">{{ $title }} List</h1>
             @if ($role === 'Administrator' || $role === 'Waiter')
@@ -47,7 +47,7 @@
                     <tr class="{{ $loop->even ? 'bg-white-main' : 'bg-white'}} text-black-main">
                         <td class="border-b border-r border-white p-2 text-center font-bold">{{ $menus->firstItem() + $loop->index }}</td>
                         <td class="border border-white p-2 text-center">{{ $menu->menu_name }}</td>
-                        <td class="border border-white p-2 text-center">${{ $menu->price }}</td>
+                        <td class="border border-white p-2 text-center">${{ number_format($menu->price, 2) }}</td>
                         <td class="border-b border-white">
                             <div class="flex justify-center items-center gap-1">
                                 <x-icon-button color='cyan'
@@ -55,7 +55,7 @@
                                     data-type="detail"
                                     data-menu-id="{{ $menu->menu_id }}"
                                     data-menu-name="{{ $menu->menu_name }}"
-                                    data-price="{{ $menu->price }}"
+                                    data-price="{{ number_format($menu->price, 2) }}"
                                     data-created-at="{{ $menu->created_at }}"
                                     data-updated-at="{{ $menu->updated_at }}"
                                 >
@@ -69,7 +69,7 @@
                                         data-update-url="{{ route('menu.update', $menu->menu_id) }}"
                                         data-target-form="formUpdateMenu"
                                         data-menu-name="{{ $menu->menu_name }}"
-                                        data-price="{{ $menu->price }}"
+                                        data-price="{{ number_format($menu->price, 2) }}"
                                     >
                                         <x-lucide-pen class="w-6" />
                                     </x-icon-button>
@@ -111,7 +111,7 @@
                 <label for="menuPrice" class="font-bold text-sm w-fit">Menu Price</label>
                 <div class="w-90 flex items-center border-2 border-black-main rounded-lg outline-none focus-within:bg-red-main/10 focus-within:border-red-main transition">
                     <div class="pl-2">$</div>
-                    <input type="number" name="menuPrice" id="menuPrice" placeholder="Menu Price" autocomplete="off" required
+                    <input type="number" name="menuPrice" id="menuPrice" placeholder="Menu Price" autocomplete="off" step="0.01" required
                     class="w-90 p-2 pl-0 text-sm outline-none">
                 </div>
             </div>
@@ -134,7 +134,7 @@
             <p>Menu Name</p>
             <p>: <span id="modalMenuName"></span></p>
             <p>Price /piece</p>
-            <p>: <span id="modalPrice"></span></p>
+            <p>: $<span id="modalPrice"></span></p>
             <p>Created At</p>
             <p>: <span id="modalCreatedAt"></span></p>
             <p>Updated At</p>
@@ -161,7 +161,7 @@
                 <label for="menuPrice" class="font-bold text-sm w-fit">Menu Price</label>
                 <div class="w-90 flex items-center border-2 border-black-main rounded-lg outline-none focus-within:bg-red-main/10 focus-within:border-red-main transition">
                     <div class="pl-2">$</div>
-                    <input type="number" name="menuPrice" id="modalPrice" placeholder="Menu Price" autocomplete="off" required
+                    <input type="number" name="menuPrice" id="modalPrice" placeholder="Menu Price" autocomplete="off" step="0.01" required
                     class="w-90 p-2 pl-0 text-sm outline-none">
                 </div>
             </div>

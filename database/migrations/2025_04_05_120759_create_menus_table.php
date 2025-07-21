@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->id('menu_id');
             $table->string('menu_name');
-            $table->float('price');
+            $table->decimal('price', 8, 2);
             $table->timestamps();
         });
     }

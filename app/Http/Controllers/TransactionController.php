@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exports\TransactionExport;
 use App\Models\OrderGroup;
 use App\Models\Transaction;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -30,9 +31,9 @@ class TransactionController extends Controller
         $allOrderGroups = $unpaidOrderGroups->merge($transactionOrderGroups)->unique('order_group_id');
 
         $allOrderGroups->map(function ($group) {
-            $group->total_price = $group->orders->sum(function ($order) {
-                return $order->menu->price * $order->menu_amount;
-            });
+            $group->total_price = $group->orders->reduce(function ($carry, $order) {
+                return $carry + ($order->menu->price * $order->menu_amount);
+            }, 0);
             return $group;
         });
 
@@ -76,7 +77,7 @@ class TransactionController extends Controller
         $table->table_status = true;
         $table->save();
 
-        return redirect()->route('transaction.index')->with('success', 'Transaction added successfully!');
+        return redirect()->back()->with('success', 'Transaction added successfully!');
     }
 
     public function update(Request $request, $id)
@@ -125,5 +126,18 @@ class TransactionController extends Controller
     public function exportExcel()
     {
         return Excel::download(new TransactionExport, 'transactions-burgerhead.xlsx');
+    }
+
+    public function printReceipt(Request $request)
+    {
+        $request->validate([
+            'transaction_id' => 'required|exists:transactions,transaction_id'
+        ]);
+
+        $transaction = Transaction::with(['orderGroup.customer', 'orderGroup.table', 'orderGroup.orders.menu'])->findOrFail($request->transaction_id);
+
+        $pdf = FacadePdf::loadView('receipt-pdf.transaction-receipt', ['transaction' => $transaction]);
+
+        return $pdf->download('transaction-receipt-' . $transaction->transaction_id . '.pdf');
     }
 }
