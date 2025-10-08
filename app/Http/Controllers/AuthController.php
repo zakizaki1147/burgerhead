@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,6 +20,12 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'activity_type' => 'login',
+                'description' => 'Logged in.'
+            ]);
+
             return redirect()->intended('/dashboard')->with('success', 'Log in success! Welcome to Burgerhead!');
         }
 
@@ -29,6 +36,12 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'logout',
+            'description' => 'Logged out.'
+        ]);
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

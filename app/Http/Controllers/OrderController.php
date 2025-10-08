@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\OrderExport;
-use App\Models\Customer;
 use App\Models\Menu;
 use App\Models\Order;
-use App\Models\OrderGroup;
 use App\Models\Table;
+use App\Models\Customer;
+use App\Models\OrderGroup;
+use App\Models\ActivityLog;
+use App\Exports\OrderExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
@@ -67,15 +68,21 @@ class OrderController extends Controller
         ]);
 
         foreach ($validated['menu'] as $index => $menuId) {
-            Order::create([
+            $orderGroup = Order::create([
                 'order_group_id' => $orderGroup->order_group_id,
                 'menu_id' => $menuId,
                 'menu_amount' => $request->amount[$index]
             ]);
         }
-
+        
         Table::where('table_id', $validated['tableId'])->update([
             'table_status' => false
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'create',
+            'description' => 'Created a new order group: ORD #' . $orderGroup->order_group_id . '-' . $validated['customerId'] . '-' . $validated['tableId'] . '.'
         ]);
 
         return redirect()->route('order.index')->with('success', 'Order added successfully!');
@@ -122,6 +129,12 @@ class OrderController extends Controller
             ]);
         }
 
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'update',
+            'description' => 'Updated a order group: ORD #' . $orderGroupId . '-' . $validated['customerId'] . '-' . $validated['tableId'] . '.'
+        ]);
+
         return redirect()->route('order.index')->with('success', 'Order updated successfully!');
     }
 
@@ -130,6 +143,9 @@ class OrderController extends Controller
         $orderGroup = OrderGroup::with([
             'orders', 'table'
         ])->findOrFail($orderGroupId);
+
+        $customerId = $orderGroup->customer_id;
+        $tableId = $orderGroup->table_id;
 
         if ($orderGroup->table) {
             $table = $orderGroup->table;
@@ -140,10 +156,23 @@ class OrderController extends Controller
         $orderGroup->orders()->delete();
         $orderGroup->delete();
 
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'delete',
+            'description' => 'Deleted an order group: ORD #' . $orderGroupId . '-' . $customerId . '-' . $tableId . '.'
+        ]);
+
         return redirect()->route('order.index')->with('success', 'Order deleted successfully!');
     }
 
-    public function exportExcel() {
+    public function exportExcel()
+    {
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'export',
+            'description' => 'Exported order data to excel.'
+        ]);
+
         return Excel::download(new OrderExport, 'orders-burgerhead.xlsx');
     }
 }

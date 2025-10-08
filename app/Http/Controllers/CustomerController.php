@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -27,11 +29,17 @@ class CustomerController extends Controller
             'phoneNumber.unique' => 'Phone number already used! Please use different phone number!'
         ]);
 
-        Customer::create([
+        $customer = Customer::create([
             'customer_name' => $validated['customerName'],
             'gender' => $validated['gender'],
             'phone_number' => $validated['phoneNumber'],
             'address' => $validated['address'],
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'create',
+            'description' => 'Created a new customer: ' . $customer->customer_name . '.'
         ]);
 
         return redirect()->route('customer.index')->with('success', 'Customer created successfully!');
@@ -55,13 +63,26 @@ class CustomerController extends Controller
         $customer->address = $validated['address'];
         $customer->save();
 
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'update',
+            'description' => 'Updated a customer: ' . $customer->customer_name . '.'
+        ]);
+
         return redirect()->route('customer.index')->with('success', 'Customer updated successfully!');
     }
 
     public function destroy($id)
     {
         $customer = Customer::findOrFail($id);
+        $customerName = $customer->customer_name;
         $customer->delete();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'delete',
+            'description' => 'Deleted a customer: ' . $customerName . '.'
+        ]);
 
         return redirect()->route('customer.index')->with('success', 'Customer deleted successfully!');
     }

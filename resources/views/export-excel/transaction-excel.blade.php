@@ -34,7 +34,7 @@
                     <td>${{ $transaction->pay_amount }}</td>
                     <td>${{ $transaction->change_amount }}</td>
                     <td>{{ $transaction->transaction_status ? 'Success ✅' : 'Pending ❌' }}</td>
-                    <td>{{ $transaction->orderGroup->user->full_name }}</td>
+                    <td>{{ $transaction->user->full_name }}</td>
                     <td>{{ $transaction->created_at }}</td>
                     <td>{{ $transaction->updated_at }}</td>
                 </tr>

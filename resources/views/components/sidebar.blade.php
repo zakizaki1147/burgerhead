@@ -22,6 +22,10 @@
                 <x-lucide-user-pen class="w-6" />
                 <h2>User</h2>
             </a>
+            <a href="/activity-log" class="{{ request()->is('activity-log') ? 'bg-black-main font-bold cursor-default' : 'bg-red-main font-medium hover:bg-black-main/70 active:bg-black-main' }} w-full flex gap-2 p-2 text-white-main rounded-lg transition">
+                <x-lucide-logs class="w-6" />
+                <h2>Activity Log</h2>
+            </a>
         @elseif ($role === 'Waiter')
             <a href="/customer" class="{{ request()->is('customer') ? 'bg-black-main font-bold cursor-default' : 'bg-red-main font-medium hover:bg-black-main/70 active:bg-black-main' }} w-full flex gap-2 p-2 text-white-main rounded-lg transition">
                 <x-lucide-users class="w-6" />
@@ -69,31 +73,11 @@
                 <x-lucide-user-pen class="w-6" />
                 <h2>User</h2>
             </a>
+            <a href="/activity-log" class="{{ request()->is('activity-log') ? 'bg-black-main font-bold cursor-default' : 'bg-red-main font-medium hover:bg-black-main/70 active:bg-black-main' }} w-full flex gap-2 p-2 text-white-main rounded-lg transition">
+                <x-lucide-logs class="w-6" />
+                <h2>Activity Log</h2>
+            </a>
         @endif
-        {{-- <a href="/customer" class="{{ request()->is('customer') ? 'bg-black-main font-bold cursor-default' : 'bg-red-main font-medium hover:bg-black-main/70 active:bg-black-main' }} w-full flex gap-2 p-2 text-white-main rounded-lg transition">
-            <x-lucide-users class="w-6" />
-            <h2>Customer</h2>
-        </a>
-        <a href="/menu" class="{{ request()->is('menu') ? 'bg-black-main font-bold cursor-default' : 'bg-red-main font-medium hover:bg-black-main/70 active:bg-black-main' }} w-full flex gap-2 p-2 text-white-main rounded-lg transition">
-            <x-lucide-sandwich class="w-6" />
-            <h2>Menu</h2>
-        </a>
-        <a href="/table" class="{{ request()->is('table') ? 'bg-black-main font-bold cursor-default' : 'bg-red-main font-medium hover:bg-black-main/70 active:bg-black-main' }} w-full flex gap-2 p-2 text-white-main rounded-lg transition">
-            <x-lucide-layers-2 class="w-6" />
-            <h2>Table</h2>
-        </a>
-        <a href="/user" class="{{ request()->is('user') ? 'bg-black-main font-bold cursor-default' : 'bg-red-main font-medium hover:bg-black-main/70 active:bg-black-main' }} w-full flex gap-2 p-2 text-white-main rounded-lg transition">
-            <x-lucide-user-pen class="w-6" />
-            <h2>User</h2>
-        </a>
-        <a href="/order" class="{{ request()->is('order') ? 'bg-black-main font-bold cursor-default' : 'bg-red-main font-medium hover:bg-black-main/70 active:bg-black-main' }} w-full flex gap-2 p-2 text-white-main rounded-lg transition">
-            <x-lucide-clipboard-list class="w-6" />
-            <h2>Order</h2>
-        </a>
-        <a href="/transaction" class="{{ request()->is('transaction') ? 'bg-black-main font-bold cursor-default' : 'bg-red-main font-medium hover:bg-black-main/70 active:bg-black-main' }} w-full flex gap-2 p-2 text-white-main rounded-lg transition">
-            <x-lucide-dollar-sign class="w-6" />
-            <h2>Transaction</h2>
-        </a> --}}
     </div>
     <hr class="w-full border border-white-main" />
     <div class="w-full flex justify-between items-center gap-2">

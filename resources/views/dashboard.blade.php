@@ -43,6 +43,56 @@
                 </div>
             </div>
         </div>
+        <div class="w-full bg-white p-5 flex flex-col gap-2 rounded-lg shadow-lg">
+            <div class="flex justify-between items-center">
+                <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">Recent Activities</h1>
+                <a href="/activity-log" class="w-fit">
+                    <x-primary-button color='red-main'>See More<x-lucide-chevrons-right class="w-5" /></x-primary-button>
+                </a>
+            </div>
+            <hr class="w-full border border-black-main" />
+            <table class="w-full rounded-md overflow-hidden">
+                <thead class="bg-red-main text-white-main">
+                    <tr>
+                        <th class="border-b border-r p-2" style="width: 4%">No</th>
+                        <th class="border-b border-r" style="width: 15%">Time</th>
+                        <th class="border-b border-r" style="width: 10%">Type</th>
+                        <th class="border-b border-r" style="width: 25%">User</th>
+                        <th class="border-b">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($activityLogs as $log)
+                        <tr class="{{ $loop->even ? 'bg-white-main' : 'bg-white' }} text-black-main">
+                            <td class="border-b border-white p-2 text-center font-bold">{{ $loop->iteration }}</td>
+                            <td class="border border-white p-2 text-center">{{ $log->created_at->diffForHumans() }}</td>
+                            <td class="border border-white p-2 text-center">
+                                @php
+                                    $badgeClass = match ($log->activity_type) {
+                                        'login' => 'bg-cyan-500',
+                                        'logout' => 'bg-cyan-500',
+                                        'create' => 'bg-green-500',
+                                        'update' => 'bg-yellow-500',
+                                        'delete' => 'bg-red-500',
+                                        'export' => 'bg-orange-500',
+                                        'print' => 'bg-orange-500',
+                                    };
+                                @endphp
+                                <span class="px-3 py-1 {{ $badgeClass }} rounded-md text-white text-sm font-medium">
+                                    {{ ucfirst($log->activity_type) }}
+                                </span>
+                            </td>
+                            <td class="border border-white p-2">{{ $log->user->full_name }} ({{ $log->user->role }})</td>
+                            <td class="border border-white p-2">{{ $log->description }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td class="text-center py-10 bg-white-main" colspan="6">There is no data :(</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     @elseif ($role === 'Waiter')
         <div class="w-full bg-white p-5 flex flex-col gap-2 rounded-lg shadow-lg">
             <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">Data Summary</h1>
@@ -99,7 +149,7 @@
             </div>
         </div>
         <div class="w-full bg-white p-5 flex flex-col gap-2 rounded-lg shadow-lg">
-            <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">Recent Order(s)</h1>
+            <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">Recent Orders</h1>
             <hr class="w-full border border-black-main" />
             <div class="grid grid-cols-3 gap-2">
                 @forelse ($unpaidOrderGroups as $unpaidOrderGroup)
@@ -159,6 +209,56 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="w-full bg-white p-5 flex flex-col gap-2 rounded-lg shadow-lg">
+            <div class="flex justify-between items-center">
+                <h1 class="text-red-main text-xl font-bold h-[39.2px] flex items-center">Recent Activities</h1>
+                <a href="/activity-log" class="w-fit">
+                    <x-primary-button color='red-main'>See More<x-lucide-chevrons-right class="w-5" /></x-primary-button>
+                </a>
+            </div>
+            <hr class="w-full border border-black-main" />
+            <table class="w-full rounded-md overflow-hidden">
+                <thead class="bg-red-main text-white-main">
+                    <tr>
+                        <th class="border-b border-r p-2" style="width: 4%">No</th>
+                        <th class="border-b border-r" style="width: 15%">Time</th>
+                        <th class="border-b border-r" style="width: 25%">User</th>
+                        <th class="border-b border-r" style="width: 10%">Type</th>
+                        <th class="border-b">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($activityLogs as $log)
+                        <tr class="{{ $loop->even ? 'bg-white-main' : 'bg-white' }} text-black-main">
+                            <td class="border-b border-white p-2 text-center font-bold">{{ $loop->iteration }}</td>
+                            <td class="border border-white p-2 text-center">{{ $log->created_at->diffForHumans() }}</td>
+                            <td class="border border-white p-2">{{ $log->user->full_name }} ({{ $log->user->role }})</td>
+                            <td class="border border-white p-2 text-center">
+                                @php
+                                    $badgeClass = match ($log->activity_type) {
+                                        'login' => 'bg-cyan-500',
+                                        'logout' => 'bg-cyan-500',
+                                        'create' => 'bg-green-500',
+                                        'update' => 'bg-yellow-500',
+                                        'delete' => 'bg-red-500',
+                                        'export' => 'bg-orange-500',
+                                        'print' => 'bg-orange-500',
+                                    };
+                                @endphp
+                                <span class="px-3 py-1 {{ $badgeClass }} rounded-md text-white text-sm font-medium">
+                                    {{ ucfirst($log->activity_type) }}
+                                </span>
+                            </td>
+                            <td class="border border-white p-2">{{ $log->description }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td class="text-center py-10 bg-white-main" colspan="6">There is no data :(</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     @endif
 

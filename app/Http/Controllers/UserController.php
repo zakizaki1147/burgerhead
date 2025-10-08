@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -29,11 +30,17 @@ class UserController extends Controller
             'username.unique' => 'Username already used! Please use different username!'
         ]);
 
-        User::create([
+        $user = User::create([
             'full_name' => $validated['fullName'],
             'username' => $validated['username'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'create',
+            'description' => 'Created a new user: ' . $user->full_name . '.'
         ]);
 
         return redirect()->route('user.index')->with('success', 'User created successfully!');
@@ -61,6 +68,12 @@ class UserController extends Controller
         $user->role = $validated['role'];
         $user->save();
 
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'update',
+            'description' => 'Updated an user: ' . $user->full_name . '.'
+        ]);
+
         return redirect()->route('user.index')->with('success', 'User updated successfully!');
     }
 
@@ -73,7 +86,14 @@ class UserController extends Controller
         }
 
         $user = User::findOrFail($id);
+        $userName = $user->full_name;
         $user->delete();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'activity_type' => 'delete',
+            'description' => 'Deleted an user: ' . $userName . '.'
+        ]);
 
         return redirect()->route('user.index')->with('success', 'User deleted successfully!');
     }

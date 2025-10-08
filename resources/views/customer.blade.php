@@ -32,15 +32,16 @@
                 </div>
             @endif
         </div>
-        {{-- <div class="flex justify-between items-center">
-            <div class="w-fit flex">
-                <input type="text" name="" id="" placeholder="Search" autocomplete="off"
-                class="w-80 p-2 border-2 border-red-main text-sm rounded-l-lg outline-none focus:bg-red-main/10 focus:border-red-main transition">
+        <hr class="w-full border border-black-main" />
+        <div class="flex justify-between items-center">
+            {{-- <div class="w-fit flex">
+                <input type="text" name="" id="" placeholder="Search..." autocomplete="off"
+                class="w-80 p-2 border-2 border-red-main border-r-0 text-sm rounded-l-lg outline-none focus:bg-red-main/10 focus:border-red-main transition">
                 <button class="px-3 py-2 bg-red-main text-white-main outline-none rounded-r-lg hover:bg-red-main/85 active:bg-red-main transition cursor-pointer">
                     <x-lucide-search class="w-6"></x-lucide-search>
                 </button>
-            </div>
-            <div class="w-fit">
+            </div> --}}
+            {{-- <div class="w-fit">
                 <x-secondary-button color='red-main'
                     data-open-modal="modalCreateCustomer"
                     data-type="create"
@@ -49,9 +50,8 @@
                 >
                     <x-lucide-plus-circle class="w-5" />Create Customer
                 </x-secondary-button>
-            </div>
-        </div> --}}
-        <hr class="w-full border border-black-main" />
+            </div> --}}
+        </div>
         <table class="w-full rounded-md overflow-hidden">
             <thead class="bg-red-main text-white-main">
                 <tr>

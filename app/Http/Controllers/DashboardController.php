@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Customer;
 use App\Models\Menu;
 use App\Models\Order;
@@ -33,6 +34,8 @@ class DashboardController extends Controller
                 }, 0);
                 return $group;
             });
+
+        $activityLogs = ActivityLog::latest()->limit(10)->get();
 
         $availableTablesChart = Table::where('table_status', true)->count();
         $occupiedTablesChart = Table::where('table_status', false)->count();
@@ -85,6 +88,8 @@ class DashboardController extends Controller
             'totalTransactions' => $totalTransactions,
             'totalUsers' => $totalUsers,
             'unpaidOrderGroups' => $unpaidOrderGroups,
+            'activityLogs' => $activityLogs,
+
             'availableTablesChart' => $availableTablesChart,
             'occupiedTablesChart' => $occupiedTablesChart,
             'unpaidOrderGroupsChart' => $unpaidOrderGroupsChart,

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MenuController;
@@ -22,6 +23,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/activity-log', [ActivityLogController::class, 'index'])->name('activity-log.index')->middleware('role:Administrator,Owner');
 
     Route::get('/customer', [CustomerController::class, 'index'])->name('customer.index')->middleware('role:Waiter,Owner');
     Route::post('/customer', [CustomerController::class, 'store'])->name('customer.store');
